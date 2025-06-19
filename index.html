@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Estações</title>
+  <style>
+    body { margin: 0; background: black; color: white; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    #titulo { font-size: 120px; font-weight: bold; animation: colorShift 3s infinite, pulseSize 2s infinite; }
+    #numero { font-size: 280px; margin-top: 40px; font-weight: bold; color: rgb(233, 211, 17); }
+    .marquee { position: fixed; bottom: 10px; width: 100%; white-space: nowrap; overflow: hidden; font-size: 40px; font-weight: bold; color: white; background-color: black; text-align: center; animation: marqueeAnimation 25s linear infinite; }
+    @keyframes colorShift { 0% { color: rgb(255, 0, 0); } 25% { color: rgb(0, 255, 0); } 50% { color: rgb(0, 0, 255); } 75% { color: rgb(255, 255, 0); } 100% { color: rgb(255, 0, 0); } }
+    @keyframes pulseSize { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    @keyframes marqueeAnimation { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+  </style>
+</head>
+<body>
+  <div id="titulo">ESTAÇÃO LIVRE</div>
+  <div id="numero">-</div>
+  <audio id="som" src="sound.mp3"></audio>
+  <div class="marquee"> O Senhor é meu pastor e nada me faltará </div>
+  <script>
+    function atualizarNumero() {
+      const valor = localStorage.getItem('numeroEstacao');
+      if (valor) {
+        document.getElementById("numero").textContent = valor;
+        // Toca o som sempre que o número mudar
+        try { document.getElementById("som").play(); } catch (e) {}
+      }
+    }
+    // Atualiza ao carregar
+    atualizarNumero();
+    // Atualiza automaticamente se o valor mudar em outra aba
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'numeroEstacao') atualizarNumero();
+      io.on('connection', (socket) => {
+  socket.on('updatePage', (data) => {
+    // Envia a atualização para todos os outros clientes, exceto o que originou a mudança.
+    socket.broadcast.emit('updatePage', data);
+  });
+});
+
+    });
+  </script>
+</body>
+</html>

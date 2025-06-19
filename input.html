@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Atualizar Estação</title>
+    <style>
+        body {
+            margin: 0;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #formulario {
+            margin-top: 30px;
+        }
+        input, button {
+            font-size: 20px;
+            padding: 10px;
+            margin: 5px;
+        }
+        #painel {
+            margin-top: 40px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #00ff99;
+        }
+    </style>
+</head>
+<body>
+    <h1>Atualizar Estação</h1>
+    <div id="formulario">
+        <input type="number" id="novaEstacao" placeholder="Digite o número da estação">
+        <button id="botaoAtualizar">Atualizar Número</button>
+    </div>
+    <div id="painel">Nenhum número exibido</div>
+    <div id="filaPainel" style="margin-top:20px; font-size:18px; color:#ccc;">
+        <strong>Fila de espera:</strong> <span id="filaLista">Vazia</span>
+    </div>
+    <script>
+        const painel = document.getElementById("painel");
+        const fila = [];
+        let exibindo = false;
+
+        function atualizarFilaPainel() {
+            const filaLista = document.getElementById("filaLista");
+            if (fila.length === 0) {
+                filaLista.textContent = "Vazia";
+            } else {
+                filaLista.textContent = fila.join(", ");
+            }
+        }
+
+        function exibirProximo() {
+            if (fila.length === 0) {
+                painel.textContent = "Nenhum número exibido";
+                exibindo = false;
+                atualizarFilaPainel();
+                return;
+            }
+            exibindo = true;
+            const numero = fila.shift();
+            painel.textContent = "Estação: " + numero;
+            localStorage.setItem('numeroEstacao', numero);
+            atualizarFilaPainel();
+            setTimeout(() => {
+                exibindo = false;
+                exibirProximo();
+            }, 5000);
+        }
+
+        document.getElementById("botaoAtualizar").addEventListener("click", function() {
+            const input = document.getElementById("novaEstacao");
+            const valor = input.value;
+            if (valor !== "" && !isNaN(valor)) {
+                fila.push(valor);
+                input.value = "";
+                atualizarFilaPainel();
+                if (!exibindo) {
+                    exibirProximo();
+                }
+            } else {
+                alert("Por favor, insira um número válido.");
+            }
+        });
+
+        // Mostrar o último número salvo ao carregar a página
+        window.onload = function() {
+            const ultimo = localStorage.getItem('numeroEstacao');
+            if (ultimo) {
+                painel.textContent = "Estação Mostrada: " + ultimo;
+            }
+            atualizarFilaPainel();
+            // Conectando ao servidor
+const socket = io();
+
+// Envio de dados quando uma alteração é feita
+socket.emit('updatePage', dadosAtualizados);
+
+// Escuta por updates vindos do servidor
+socket.on('updatePage', (data) => {
+  // Atualize o DOM com as novas informações
+});
+
+        };
+    </script>
